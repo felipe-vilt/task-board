@@ -7,6 +7,8 @@ import { TicketsService } from "./services/tickets.service";
 import { CommentsService } from "./services/comments.service";
 import { AttachmentsService } from "./services/attachments.service";
 import { ReportsService } from "./services/reports.service";
+import { AutomationService } from "./services/automation.service";
+import { RetrospectService } from "./services/retrospect.service";
 import { apiRoutes } from "./routes";
 
 export async function buildServer(prisma = new PrismaClient()) {
@@ -27,8 +29,12 @@ export async function buildServer(prisma = new PrismaClient()) {
     maxBytes: Number(process.env.MAX_ATTACHMENT_BYTES ?? 25 * 1024 * 1024),
   });
   const reports = new ReportsService(prisma);
+  const automation = new AutomationService(prisma);
+  const retrospect = new RetrospectService(prisma);
 
-  await apiRoutes(app, { boards, tickets, comments, attachments, reports });
+  boards.setAutomation(automation);
+
+  await apiRoutes(app, { boards, tickets, comments, attachments, reports, automation, retrospect });
 
   return app;
 }

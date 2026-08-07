@@ -9,7 +9,7 @@ interface ColumnProps {
   tickets: Ticket[];
   tagsByTicket: Record<string, { id: string; name: string; color: string }[]>;
   allTags?: { id: string; name: string; color: string }[];
-  onAddTicket: (columnId: string, title: string) => void;
+  onAddTicket: (columnId: string, title: string, cliente?: string) => void;
   onTagTicket?: (ticketId: string, tagId: string) => void;
   onOpenComments?: (ticketId: string) => void;
 }
@@ -21,12 +21,14 @@ export function KanbanColumn({ column, tickets, tagsByTicket, allTags = [], onAd
   });
 
   const [draft, setDraft] = useState("");
+  const [clientDraft, setClientDraft] = useState("");
 
   const handleAdd = () => {
     const title = draft.trim();
     if (!title) return;
-    onAddTicket(column.id, title);
+    onAddTicket(column.id, title, clientDraft.trim() || undefined);
     setDraft("");
+    setClientDraft("");
   };
 
   return (
@@ -63,7 +65,14 @@ export function KanbanColumn({ column, tickets, tagsByTicket, allTags = [], onAd
         </div>
       </SortableContext>
 
-      <div className="border-t border-slate-200 dark:border-slate-700 p-2">
+      <div className="border-t border-slate-200 dark:border-slate-700 p-2 space-y-1.5">
+        <input
+          type="text"
+          value={clientDraft}
+          onChange={(e) => setClientDraft(e.target.value)}
+          placeholder="Cliente (opcional)"
+          className="w-full rounded border border-slate-200 dark:border-slate-700 px-2 py-1 text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-400 focus:outline-none"
+        />
         <input
           type="text"
           value={draft}

@@ -15,6 +15,8 @@ Regras de execução para o assistente que trabalha neste projeto.
 ## Branches
 - Git Flow clássico: `feature/<nome>`, `bugfix/<nome>`, `release/<versão>`, `hotfix/<nome>`.
 - Base: `main` estável. `develop` como linha de integração (opcional enquanto for mono-board, mas manter o padrão).
+- **Todo desenvolvimento deve ser feito na branch `develop`**. Crie uma sub-branch (`feature/`, `bugfix/`) se preferir, mas o destino de merge é o `develop`.
+- **Ao finalizar uma correção, funcionalidade ou qualquer atividade**, pergunte ao usuário se devemos abrir um PR/pedido para incluir as alterações na `main`. Nunca merge automaticamente sem confirmação.
 
 ## Dependências
 - Antes de instalar qualquer lib: sugerir alternativa mais leve e perguntar.
@@ -35,6 +37,10 @@ Regras de execução para o assistente que trabalha neste projeto.
 - Confirmar o escopo quando houver mais de uma interpretação possível.
 - Perguntar antes de mudar arquitetura, schema de banco ou contrato de API.
 - Quando não houver informação suficiente, perguntar em vez de assumir.
+
+## Backlog de funcionalidades
+- Funcionalidades planejadas são registradas em `docs/backlog.md` com título, descrição e data de registro.
+- **Regra:** ao implementar uma funcionalidade do backlog, remova-a de `docs/backlog.md` e faça commit da mudança.
 
 ## Como rodar (após setup)
 - `docker compose up -d` — sobe Postgres e backend.

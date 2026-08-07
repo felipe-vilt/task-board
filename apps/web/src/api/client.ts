@@ -9,6 +9,8 @@ import {
 } from "@task-board/schemas";
 import type { Board, Column, Ticket, Tag, Comment, Attachment } from "@task-board/schemas";
 import type { CfdPoint, VelocityPoint, LeadTimePoint } from "../types/reports";
+import type { AutomationRule } from "../types/automation";
+import type { RetrospectData } from "../types/retrospect";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
 
@@ -38,6 +40,7 @@ export const api = {
     description?: string;
     priority?: string;
     assignee?: string;
+    cliente?: string;
   }) => request<Ticket>(`/boards/${input.boardId}/tickets`, {
     method: "POST",
     body: JSON.stringify(input),
@@ -92,6 +95,27 @@ export const api = {
   cfd: (boardId: string) => request<CfdPoint[]>(`/boards/${boardId}/reports/cfd`),
   velocity: (boardId: string) => request<VelocityPoint[]>(`/boards/${boardId}/reports/velocity`),
   leadTime: (boardId: string) => request<LeadTimePoint[]>(`/boards/${boardId}/reports/leadtime`),
+
+  listAutomations: (boardId: string) =>
+    request<AutomationRule[]>(`/boards/${boardId}/automations`),
+  createAutomation: (boardId: string, input: Record<string, unknown>) =>
+    request<AutomationRule>(`/boards/${boardId}/automations`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  updateAutomation: (boardId: string, id: string, input: Record<string, unknown>) =>
+    request<AutomationRule>(`/boards/${boardId}/automations/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
+  deleteAutomation: (boardId: string, id: string) =>
+    request<void>(`/boards/${boardId}/automations/${id}`, { method: "DELETE" }),
+  runDueDateAutomations: (boardId: string) =>
+    request<{ triggered: number }>(`/boards/${boardId}/automations/run-due-date`, {
+      method: "POST",
+    }),
+  retrospect: (boardId: string, days?: number) =>
+    request<RetrospectData>(`/boards/${boardId}/reports/retrospect${days ? `?days=${days}` : ""}`),
 };
 
 const BoardDetailSchema = BoardSchema.extend({

@@ -20,11 +20,13 @@ import { FilterBar } from "./FilterBar";
 import { filterTickets } from "./filters";
 import { TicketDetail } from "./ticket/TicketDetail";
 import { ReportsDashboard } from "./reports/ReportsDashboard";
+import { AutomationPanel } from "./automation/AutomationPanel";
+import { RetrospectPanel } from "./retrospect/RetrospectPanel";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { useToastStore } from "../store/toast";
 import type { Ticket } from "@task-board/schemas";
 
-type ViewMode = "kanban" | "reports";
+type ViewMode = "kanban" | "reports" | "automation" | "retrospect";
 
 export function Board({ boardId }: { boardId: string }) {
   const { data, isLoading, error } = useQuery({
@@ -153,14 +155,30 @@ export function Board({ boardId }: { boardId: string }) {
           </button>
           <button
             onClick={() => setView("reports")}
-            className={`rounded px-3 py-1 text-sm ${view === "reports" ? "bg-blue-600 text-white" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+            className={`rounded px-3 py-1 text-sm ${view === "reports" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"}`}
           >
             Relatórios
+          </button>
+          <button
+            onClick={() => setView("automation")}
+            className={`rounded px-3 py-1 text-sm ${view === "automation" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"}`}
+          >
+            Automações
+          </button>
+          <button
+            onClick={() => setView("retrospect")}
+            className={`rounded px-3 py-1 text-sm ${view === "retrospect" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"}`}
+          >
+            Retrospectiva
           </button>
         </div>
       </div>
 
-      {view === "reports" ? (
+      {view === "retrospect" ? (
+        <RetrospectPanel boardId={boardId} />
+      ) : view === "automation" ? (
+        <AutomationPanel boardId={boardId} board={data} />
+      ) : view === "reports" ? (
         <ReportsDashboard boardId={boardId} />
       ) : (
       <DndContext
@@ -177,8 +195,8 @@ export function Board({ boardId }: { boardId: string }) {
               tickets={column.tickets}
               tagsByTicket={tagsByTicket}
               allTags={allTags}
-              onAddTicket={(columnId, title) =>
-                addTicketMutation.mutate({ boardId, columnId, title })
+              onAddTicket={(columnId, title, cliente) =>
+                addTicketMutation.mutate({ boardId, columnId, title, cliente })
               }
               onTagTicket={(ticketId, tagId) => tagMutation.mutate({ ticketId, tagId })}
               onOpenComments={setSelectedTicketId}

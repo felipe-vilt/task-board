@@ -44,6 +44,7 @@ export const TicketSchema = z.object({
   description: z.string().max(10_000).nullable(),
   priority: PrioritySchema,
   assignee: z.string().max(80).nullable(),
+  cliente: z.string().max(120).nullable(),
   dueDate: z.coerce.date().nullable(),
   position: z.number(),
   createdAt: z.coerce.date(),
@@ -59,6 +60,7 @@ export const CreateTicketSchema = z.object({
   description: z.string().max(10_000).nullable().optional(),
   priority: PrioritySchema.optional().default("medium"),
   assignee: z.string().max(80).nullable().optional(),
+  cliente: z.string().max(120).nullable().optional(),
   dueDate: z.coerce.date().nullable().optional(),
 });
 export type CreateTicket = z.infer<typeof CreateTicketSchema>;
@@ -68,6 +70,7 @@ export const UpdateTicketSchema = z.object({
   description: z.string().max(10_000).nullish(),
   priority: PrioritySchema.optional(),
   assignee: z.string().max(80).nullish(),
+  cliente: z.string().max(120).nullish(),
   dueDate: z.coerce.date().nullish(),
 });
 export type UpdateTicket = z.infer<typeof UpdateTicketSchema>;

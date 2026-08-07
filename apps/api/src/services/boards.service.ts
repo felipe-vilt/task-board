@@ -1,5 +1,6 @@
 import { CreateBoardSchema, CreateTicketSchema, UpdateTicketSchema, CreateTagSchema } from "@task-board/schemas";
 import type { PrismaClient, Prisma } from "@prisma/client";
+import type { AutomationService } from "./automation.service";
 
 export class NotFoundError extends Error {
   constructor(message: string) {
@@ -9,7 +10,13 @@ export class NotFoundError extends Error {
 }
 
 export class BoardsService {
+  private automation: AutomationService | null = null;
+
   constructor(private readonly prisma: PrismaClient) {}
+
+  setAutomation(service: AutomationService) {
+    this.automation = service;
+  }
 
   async getById(id: string) {
     const board = await this.prisma.board.findUnique({
@@ -90,8 +97,8 @@ export class BoardsService {
       orderBy: { position: "desc" },
     });
 
-    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      const ticket = await tx.ticket.create({
+    const ticket = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const created = await tx.ticket.create({
         data: {
           boardId: data.boardId,
           columnId: data.columnId,
@@ -105,11 +112,17 @@ export class BoardsService {
       });
 
       await tx.auditLog.create({
-        data: { ticketId: ticket.id, event: "created", toColumn: data.columnId, metadata: {} },
+        data: { ticketId: created.id, event: "created", toColumn: data.columnId, metadata: {} },
       });
 
-      return ticket;
+      return created;
     });
+
+    if (this.automation) {
+      await this.automation.runForTicket(ticket.id, "ticket_created");
+    }
+
+    return ticket;
   }
 
   async updateTicket(id: string, input: unknown) {
