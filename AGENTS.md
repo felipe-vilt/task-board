@@ -36,6 +36,10 @@ Regras de execução para o assistente que trabalha neste projeto.
 - Perguntar antes de mudar arquitetura, schema de banco ou contrato de API.
 - Quando não houver informação suficiente, perguntar em vez de assumir.
 
+## Backlog de funcionalidades
+- Funcionalidades planejadas são registradas em `docs/backlog.md` com título, descrição e data de registro.
+- **Regra:** ao implementar uma funcionalidade do backlog, remova-a de `docs/backlog.md` e faça commit da mudança.
+
 ## Como rodar (após setup)
 - `docker compose up -d` — sobe Postgres e backend.
 - `pnpm dev` — frontend (Vite) e backend (Fastify) em modo watch.
