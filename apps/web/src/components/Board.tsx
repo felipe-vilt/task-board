@@ -195,8 +195,8 @@ export function Board({ boardId }: { boardId: string }) {
               tickets={column.tickets}
               tagsByTicket={tagsByTicket}
               allTags={allTags}
-              onAddTicket={(columnId, title) =>
-                addTicketMutation.mutate({ boardId, columnId, title })
+              onAddTicket={(columnId, title, cliente) =>
+                addTicketMutation.mutate({ boardId, columnId, title, cliente })
               }
               onTagTicket={(ticketId, tagId) => tagMutation.mutate({ ticketId, tagId })}
               onOpenComments={setSelectedTicketId}

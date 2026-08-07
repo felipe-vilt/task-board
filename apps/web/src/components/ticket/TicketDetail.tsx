@@ -16,7 +16,9 @@ export function TicketDetail({ ticketId, boardId, onClose }: TicketDetailProps) 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editBody, setEditBody] = useState("");
   const [assignee, setAssignee] = useState("");
+  const [cliente, setCliente] = useState("");
   const [editingAssignee, setEditingAssignee] = useState(false);
+  const [editingCliente, setEditingCliente] = useState(false);
 
   const { data: comments, isLoading } = useQuery({
     queryKey: ["comments", ticketId],
@@ -52,6 +54,14 @@ export function TicketDetail({ ticketId, boardId, onClose }: TicketDetailProps) 
     },
   });
 
+  const clienteMutation = useMutation({
+    mutationFn: (cliente: string) => api.updateTicket(ticketId, { cliente }),
+    onSuccess: () => {
+      setEditingCliente(false);
+      return queryClient.invalidateQueries({ queryKey: ["board", boardId] });
+    },
+  });
+
   const handleCreate = () => {
     const body = draft.trim();
     if (!body) return;
@@ -66,6 +76,10 @@ export function TicketDetail({ ticketId, boardId, onClose }: TicketDetailProps) 
 
   const handleSaveAssignee = () => {
     assigneeMutation.mutate(assignee.trim());
+  };
+
+  const handleSaveCliente = () => {
+    clienteMutation.mutate(cliente.trim());
   };
 
   return (
@@ -116,6 +130,41 @@ export function TicketDetail({ ticketId, boardId, onClose }: TicketDetailProps) 
                 className="mt-1 cursor-pointer text-sm text-slate-700 dark:text-slate-300 hover:text-blue-600"
               >
                 {assignee || "— clique para definir —"}
+              </p>
+            )}
+          </section>
+
+          <section className="mt-4">
+            <label className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              Cliente
+            </label>
+            {editingCliente ? (
+              <div className="mt-1 flex gap-2">
+                <input
+                  type="text"
+                  value={cliente}
+                  onChange={(e) => setCliente(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveCliente();
+                    if (e.key === "Escape") setEditingCliente(false);
+                  }}
+                  autoFocus
+                  placeholder="Nome do cliente"
+                  className="flex-1 rounded border border-slate-200 dark:border-slate-700 px-2 py-1 text-sm focus:border-blue-400 focus:outline-none"
+                />
+                <button onClick={handleSaveCliente} className="text-xs text-blue-600">
+                  Salvar
+                </button>
+                <button onClick={() => setEditingCliente(false)} className="text-xs text-slate-500 dark:text-slate-400">
+                  Cancelar
+                </button>
+              </div>
+            ) : (
+              <p
+                onClick={() => setEditingCliente(true)}
+                className="mt-1 cursor-pointer text-sm text-slate-700 dark:text-slate-300 hover:text-blue-600"
+              >
+                {cliente || "— clique para definir —"}
               </p>
             )}
           </section>

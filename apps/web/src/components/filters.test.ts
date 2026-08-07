@@ -10,6 +10,7 @@ const base: Omit<Ticket, "title"> = {
   description: null,
   priority: "medium",
   assignee: null,
+  cliente: null,
   dueDate: null,
   position: 1,
   createdAt: new Date(),

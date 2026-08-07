@@ -40,6 +40,7 @@ export const api = {
     description?: string;
     priority?: string;
     assignee?: string;
+    cliente?: string;
   }) => request<Ticket>(`/boards/${input.boardId}/tickets`, {
     method: "POST",
     body: JSON.stringify(input),

@@ -79,6 +79,12 @@ export function TicketCard({ ticket, tags, allTags = [], onTag, onOpenComments }
         <p className="mt-2 text-xs text-slate-500">@{ticket.assignee}</p>
       )}
 
+      {ticket.cliente && (
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          🏢 {ticket.cliente}
+        </p>
+      )}
+
       {ticket.dueDate && (
         <p className={`mt-1 text-xs ${isOverdue ? "font-medium text-red-600" : "text-slate-500"}`}>
           {isOverdue && "⚠ "}
