@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Board {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  columns Column[]
+  tickets Ticket[]
+  tags    Tag[]
+
+  @@map("boards")
+}
+
+model Column {
+  id        String   @id @default(uuid()) @db.Uuid
+  boardId   String   @map("board_id") @db.Uuid
+  name      String
+  position  Int
+  wLimit    Int?     @map("w_limit")
+  isSystem  Boolean  @default(false) @map("is_system")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  board   Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
+
+  @@index([boardId, position])
+  @@map("columns")
+}
+
+model Ticket {
+  id          String    @id @default(uuid()) @db.Uuid
+  boardId     String    @map("board_id") @db.Uuid
+  columnId    String    @map("column_id") @db.Uuid
+  title       String
+  description String?
+  priority    Priority  @default(MEDIUM)
+  assignee    String?
+  dueDate     DateTime? @map("due_date")
+  position    Float
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  completedAt DateTime? @map("completed_at")
+
+  board       Board        @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  column      Column       @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  attachments Attachment[]
+  tags        Tag[]        @relation("TicketTags")
+  auditLogs   AuditLog[]
+
+  @@index([boardId, columnId, position])
+  @@index([dueDate])
+  @@map("tickets")
+}
+
+model Tag {
+  id        String   @id @default(uuid()) @db.Uuid
+  boardId   String   @map("board_id") @db.Uuid
+  name      String
+  color     String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  board   Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  tickets Ticket[] @relation("TicketTags")
+
+  @@unique([boardId, name])
+  @@index([boardId])
+  @@map("tags")
+}
+
+model Comment {
+  id        String   @id @default(uuid()) @db.Uuid
+  ticketId  String   @map("ticket_id") @db.Uuid
+  body      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+  @@map("comments")
+}
+
+model Attachment {
+  id         String   @id @default(uuid()) @db.Uuid
+  ticketId   String   @map("ticket_id") @db.Uuid
+  filename   String
+  mimeType   String   @map("mime_type")
+  sizeBytes  Int      @map("size_bytes")
+  storageKey String   @map("storage_key")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("attachments")
+}
+
+model AuditLog {
+  id          String      @id @default(uuid()) @db.Uuid
+  ticketId    String      @map("ticket_id") @db.Uuid
+  event       AuditEvent
+  fromColumn  String?     @map("from_column") @db.Uuid
+  toColumn    String?     @map("to_column") @db.Uuid
+  metadata    Json        @default("{}")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+  @@map("audit_logs")
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum AuditEvent {
+  created
+  moved
+  updated
+  commented
+  tagged
+}
