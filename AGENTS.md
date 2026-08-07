@@ -15,6 +15,8 @@ Regras de execução para o assistente que trabalha neste projeto.
 ## Branches
 - Git Flow clássico: `feature/<nome>`, `bugfix/<nome>`, `release/<versão>`, `hotfix/<nome>`.
 - Base: `main` estável. `develop` como linha de integração (opcional enquanto for mono-board, mas manter o padrão).
+- **Todo desenvolvimento deve ser feito na branch `develop`**. Crie uma sub-branch (`feature/`, `bugfix/`) se preferir, mas o destino de merge é o `develop`.
+- **Ao finalizar uma correção, funcionalidade ou qualquer atividade**, pergunte ao usuário se devemos abrir um PR/pedido para incluir as alterações na `main`. Nunca merge automaticamente sem confirmação.
 
 ## Dependências
 - Antes de instalar qualquer lib: sugerir alternativa mais leve e perguntar.
