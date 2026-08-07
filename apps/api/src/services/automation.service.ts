@@ -1,4 +1,4 @@
-import type { PrismaClient, Prisma, TicketUpdateInput } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import { NotFoundError } from "./boards.service";
 
 interface AutomationInput {
@@ -135,9 +135,11 @@ export class AutomationService {
         break;
       }
       case "set_field": {
-        await this.prisma.ticket.update({
+        const update: Record<string, unknown> = {};
+        update[String(params.field)] = params.value;
+        await (this.prisma.ticket.update as (args: { where: { id: string }; data: Record<string, unknown> }) => Promise<unknown>)({
           where: { id: ticket.id },
-          data: { [params.field]: params.value } as unknown as TicketUpdateInput,
+          data: update,
         });
         break;
       }
