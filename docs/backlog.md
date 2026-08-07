@@ -20,3 +20,21 @@ Escopo sugerido:
 **Status:** não iniciada
 
 ---
+
+## Frontend com Design Google Stitch
+
+**Data de registro:** 2026-08-07
+
+**Descrição:** Reformular o design do frontend seguindo princípios visuais inspirados no Google Stitch (design system do Google focado em interfaces simples, limpas e com forte uso de espaçamento, tipografia clara e componentes minimalistas).
+
+Escopo sugerido:
+- Adotar paleta de cores mais neutra e consistente
+- Melhorar espaçamento e hierarquia visual
+- Tipografia legível e escalável
+- Componentes com cantos arredondados e sombras sutis
+- Layout responsivo e acessível
+- Ícones e microinterações
+
+**Status:** não iniciada
+
+---
