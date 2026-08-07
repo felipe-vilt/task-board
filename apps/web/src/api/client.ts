@@ -10,6 +10,7 @@ import {
 import type { Board, Column, Ticket, Tag, Comment, Attachment } from "@task-board/schemas";
 import type { CfdPoint, VelocityPoint, LeadTimePoint } from "../types/reports";
 import type { AutomationRule } from "../types/automation";
+import type { RetrospectData } from "../types/retrospect";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
 
@@ -112,6 +113,8 @@ export const api = {
     request<{ triggered: number }>(`/boards/${boardId}/automations/run-due-date`, {
       method: "POST",
     }),
+  retrospect: (boardId: string, days?: number) =>
+    request<RetrospectData>(`/boards/${boardId}/reports/retrospect${days ? `?days=${days}` : ""}`),
 };
 
 const BoardDetailSchema = BoardSchema.extend({

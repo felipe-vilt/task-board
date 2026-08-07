@@ -5,6 +5,7 @@ import { CommentsService } from "../services/comments.service";
 import { AttachmentsService } from "../services/attachments.service";
 import { ReportsService } from "../services/reports.service";
 import { AutomationService } from "../services/automation.service";
+import { RetrospectService } from "../services/retrospect.service";
 
 export async function apiRoutes(
   app: FastifyInstance,
@@ -15,6 +16,7 @@ export async function apiRoutes(
     attachments: AttachmentsService;
     reports: ReportsService;
     automation: AutomationService;
+    retrospect: RetrospectService;
   },
 ): Promise<void> {
   app.get("/health", async () => ({ status: "ok" }));
@@ -288,6 +290,17 @@ export async function apiRoutes(
     try {
       const result = await deps.automation.runDueDateRules(boardId);
       return reply.send(result);
+    } catch (err) {
+      if (err instanceof NotFoundError) return reply.code(404).send({ error: err.message });
+      throw err;
+    }
+  });
+
+  app.get("/boards/:boardId/reports/retrospect", async (request, reply) => {
+    const { boardId } = request.params as { boardId: string };
+    const { days } = request.query as { days?: string };
+    try {
+      return await deps.retrospect.generate(boardId, days ? Number(days) : 14);
     } catch (err) {
       if (err instanceof NotFoundError) return reply.code(404).send({ error: err.message });
       throw err;

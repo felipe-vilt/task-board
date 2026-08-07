@@ -21,11 +21,12 @@ import { filterTickets } from "./filters";
 import { TicketDetail } from "./ticket/TicketDetail";
 import { ReportsDashboard } from "./reports/ReportsDashboard";
 import { AutomationPanel } from "./automation/AutomationPanel";
+import { RetrospectPanel } from "./retrospect/RetrospectPanel";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { useToastStore } from "../store/toast";
 import type { Ticket } from "@task-board/schemas";
 
-type ViewMode = "kanban" | "reports" | "automation";
+type ViewMode = "kanban" | "reports" | "automation" | "retrospect";
 
 export function Board({ boardId }: { boardId: string }) {
   const { data, isLoading, error } = useQuery({
@@ -164,10 +165,18 @@ export function Board({ boardId }: { boardId: string }) {
           >
             Automações
           </button>
+          <button
+            onClick={() => setView("retrospect")}
+            className={`rounded px-3 py-1 text-sm ${view === "retrospect" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"}`}
+          >
+            Retrospectiva
+          </button>
         </div>
       </div>
 
-      {view === "automation" ? (
+      {view === "retrospect" ? (
+        <RetrospectPanel boardId={boardId} />
+      ) : view === "automation" ? (
         <AutomationPanel boardId={boardId} board={data} />
       ) : view === "reports" ? (
         <ReportsDashboard boardId={boardId} />
